@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energetak Kalkulátor - Kamarádka s penězi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a4d4d 0%, #1a7a7a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+
+        .brand {
+            font-size: 0.9em;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .jirka-intro {
+            background: #E0F7F6;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #1abc9c;
+        }
+
+        .jirka-intro p {
+            color: #0a4d4d;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .jirka-intro strong {
+            color: #1abc9c;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.05em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1abc9c;
+            box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 188, 156, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 40px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #E0F7F6 0%, #D4F0EE 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #1abc9c;
+        }
+
+        .result-card h3 {
+            color: #1abc9c;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #0a4d4d;
+            margin: 10px 0;
+        }
+
+        .currency {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .coffee-tip {
+            background: linear-gradient(135deg, #fff9e6 0%, #fffaeb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #f39c12;
+        }
+
+        .coffee-tip h4 {
+            color: #c87f0a;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .coffee-tip p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .coffee-savings {
+            font-weight: 700;
+            color: #1abc9c;
+            margin-top: 10px;
+        }
+
+        .alternatives {
+            margin-top: 30px;
+        }
+
+        .alternatives h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .alternative-list {
+            list-style: none;
+        }
+
+        .alternative-item {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #1abc9c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .alternative-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.2);
+        }
+
+        .alternative-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .alternative-count {
+            color: #1abc9c;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .health-section {
+            margin-top: 30px;
+            background: #FFF3E0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #f39c12;
+        }
+
+        .health-section h3 {
+            color: #c87f0a;
+            margin-bottom: 15px;
+        }
+
+        .health-item {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(243, 156, 18, 0.3);
+        }
+
+        .health-item:last-child {
+            border-bottom: none;
+        }
+
+        .health-label {
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .neuron-counter {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFE0B2 0%, #FFD180 100%);
+            border-radius: 8px;
+            text-align: center;
+            border: 2px dashed #f39c12;
+        }
+
+        .neuron-counter h4 {
+            color: #c87f0a;
+            margin-bottom: 10px;
+        }
+
+        .neuron-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #e67e22;
+        }
+
+        .neuron-text {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .warning {
+            background: #E8F8F5;
+            color: #0a4d4d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #1abc9c;
+        }
+
+        .instagram-section {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .instagram-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .instagram-section p {
+            margin-bottom: 15px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .instagram-btn {
+            display: inline-block;
+            background: white;
+            color: #1abc9c;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .instagram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ CO SI LEPŠÍHO MŮŽEŠ DOVOLIT ⚡</h1>
+            <div class="brand">Finance a Podnikání Lidsky</div>
+        </div>
+
+        <div class="content">
+            <div class="jirka-intro">
+                <p>👋 Ahoj, jsem <strong>Jirka</strong>!</p>
+                <p>Víš, kolik peněz ti vlastně vychází těma energy drinkama? Pojďme si to spočítat a podívat se, co bys si místo toho mohl koupit. Já osobně bych si dal spíš porádnou kávičku a ušetřil jsem... ☕</p>
+            </div>
+
+            <div class="input-group">
+                <label for="cans">Kolik energeťáků vypil(a) jsi za ?</label>
+                <input type="number" id="cans" min="1" value="5" placeholder="Zadej počet">
+            </div>
+
+            <div class="input-group">
+                <label for="period">Časový úsek:</label>
+                <select id="period">
+                    <option value="week">Týden</option>
+                    <option value="month" selected>Měsíc</option>
+                    <option value="year">Rok</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="price">Cena za jednu plechovku (Kč):</label>
+                <input type="number" id="price" min="1" value="45" placeholder="Zadej cenu">
+            </div>
+
+            <button onclick="calculate()">Spočítej to se mnou</button>
+
+            <div id="results" class="results">
+                <div class="result-card">
+                    <h3>💰 Kolik to stojí</h3>
+                    <div class="result-value"><span id="totalCost">0</span> <span class="currency">Kč</span></div>
+                </div>
+
+                <div class="coffee-tip">
+                    <h4>☕ Jirka's tip na ušetření:</h4>
+                    <p>Víš, že si za tenhle peníze můžeš koupit porádnou kávu každý den v kavárně? A nebude to jenom levnější na zdraví, ale taky mi přijde, že tá káva chutná víc než energeťák, ne?</p>
+                    <div class="coffee-savings">
+                        Ušetříš si: <span id="coffeeSavings">0</span> Kč na kávě <strong>bez</strong> tachykardií 💚
+                    </div>
+                </div>
+
+                <div class="alternatives">
+                    <h3>Tohle bys si mohl(a) koupit místo energeťáků:</h3>
+                    <ul class="alternative-list" id="alternativesList"></ul>
+                </div>
+
+                <div class="health-section">
+                    <h3>⚠️ Co si to děláš s tělem</h3>
+
+                    <div class="health-item">
+                        <div class="health-label">Cukr (WHO: max 25-50g denně):</div>
+                        <div><strong id="sugarGrams">0</strong>g = <strong id="sugarCubes">0</strong> kostek cukru</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="sugarProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="health-item">
+                        <div class="health-label">Kofein (bezpečně do 400mg denně):</div>
+                        <div><strong id="caffeineValue">0</strong>mg = <strong id="espressoCount">0</strong> espres</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="caffeineProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="neuron-counter">
+                        <h4>🧠 Neuronový počítadlo (legrační, ale užitečné varování)</h4>
+                        <div class="neuron-value" id="neuronLoss">0</div>
+                        <div class="neuron-text">Neuronů odsouzených k likvidaci (statisticky řečeno)</div>
+                    </div>
+                </div>
+
+                <div class="warning">
+                    <strong>💚 Tip od Jirky:</strong> Tohle nejsou jenom čísla — jsou to tvoje peníze a tvoje zdraví. Nejsem lékař, ale když máš pochyby, konzultuj ho. A treba si to vezmi s humorem, ale s tím penězi vážně ne! 😉
+                </div>
+
+                <div class="instagram-section">
+                    <h3>Líbilo se ti?</h3>
+                    <p>Sleduj <strong>Finance a Podnikání Lidsky</strong> na Instagramu a nauč se spravovat svoje finance tak, aby ti zbývalo místo i na ty energie, které chceš (a kterým rozumíš).</p>
+                    <a href="https://www.instagram.com/finance_a_podnikani_lidsky/" target="_blank" class="instagram-btn">📱 Sleduj nás na Instagramu</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Vytvořeno s 💚 pro všechny, kterým záleží na svých penězích<br>
+            © Finance a Podnikání Lidsky × Jirka Money Check</p>
+        </div>
+    </div>
+
+    <script>
+        const alternativeItems = [
+            { name: "☕ Porádná káva v kavárně", price: 80 },
+            { name: "🌮 Kebab od čajovny", price: 120 },
+            { name: "🍺 Zlatý Bažant (0,5L)", price: 35 },
+            { name: "🍕 Kousek pizzy", price: 90 },
+            { name: "📚 Kniha (nejlevnější)", price: 200 },
+            { name: "🛴 Pronájem koloběžky na den", price: 150 },
+            { name: "🍦 Zmrzlina (5 kopečků)", price: 60 },
+            { name: "🎬 Kino (vstupenka)", price: 200 },
+            { name: "🐥 Gumová kačenka", price: 150 },
+            { name: "🐟 Živá zlatá rybka", price: 200 },
+            { name: "🦙 Projížďka na lámě", price: 800 },
+            { name: "🔮 Tarotové čtení", price: 300 },
+            { name: "🧱 Pytel cementu (na cokoliv)", price: 250 },
+            { name: "🦁 Adopce surikáty v ZOO", price: 500 },
+            { name: "🎈 Let balónem (30 minut)", price: 3000 }
+        ];
+
+        function calculate() {
+            const cans = parseInt(document.getElementById('cans').value) || 1;
+            const period = document.getElementById('period').value;
+            const pricePerCan = parseFloat(document.getElementById('price').value) || 40;
+
+            const sugarPerCan = 55;
+            const caffeinePerCan = 80;
+            const coffeePrice = 80;
+
+            const totalCost = cans * pricePerCan;
+            const totalSugar = cans * sugarPerCan;
+            const totalCaffeine = cans * caffeinePerCan;
+            const neuronLoss = cans * 1234;
+            const coffeeCups = Math.floor(totalCost / coffeePrice);
+            const coffeeSavings = coffeeCups * coffeePrice;
+
+            document.getElementById('totalCost').textContent = totalCost.toLocaleString('cs-CZ');
+            document.getElementById('coffeeSavings').textContent = coffeeSavings.toLocaleString('cs-CZ');
+
+            document.getElementById('sugarGrams').textContent = totalSugar;
+            document.getElementById('sugarCubes').textContent = Math.round(totalSugar / 4);
+            document.getElementById('caffeineValue').textContent = totalCaffeine;
+            document.getElementById('espressoCount').textContent = Math.round(totalCaffeine / 75);
+            document.getElementById('neuronLoss').textContent = neuronLoss.toLocaleString('cs-CZ');
+
+            const sugarPercent = Math.min((totalSugar / 50) * 100, 100);
+            const caffeinePercent = Math.min((totalCaffeine / 400) * 100, 100);
+            document.getElementById('sugarProgress').style.width = sugarPercent + '%';
+            document.getElementById('caffeineProgress').style.width = caffeinePercent + '%';
+
+            const alternativesList = document.getElementById('alternativesList');
+            alternativesList.innerHTML = '';
+            alternativeItems.forEach(item => {
+                const count = Math.floor(totalCost / item.price);
+                if (count > 0) {
+                    const li = document.createElement('li');
+                    li.className = 'alternative-item';
+                    li.innerHTML = `
+                        <span class="alternative-name">${item.name}</span>
+                        <span class="alternative-count">${count}x</span>
+                    `;
+                    alternativesList.appendChild(li);
+                }
+            });
+
+            document.getElementById('results').classList.add('show');
+
+            setTimeout(() => {
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') calculate();
+            });
+        });
+
+        window.addEventListener('load', () => {
+            calculate();
+        });
+    </script>
+</body>
+</html>
